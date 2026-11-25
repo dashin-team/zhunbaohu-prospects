@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#12243F" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="準保戶開發" />
+  <meta name="description" content="準保戶市場開發名單：依顧問式行銷／開拓準保戶訓練架構分類、CAPMAN 評估與跟進。資料只存在這支裝置。" />
+  <title>準保戶開發名單</title>
+  <link rel="manifest" href="./manifest.json" />
+  <link rel="icon" href="./icons/icon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="./icons/icon-180.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./css/app.css" />
+</head>
+<body>
+  <div class="app" id="app" data-view="list">
+    <header class="topbar">
+      <div class="topbar-row">
+        <div class="brand">
+          <div class="logo" aria-hidden="true">準</div>
+          <div>
+            <h1>準保戶開發名單</h1>
+            <p>資料只存在這支裝置，請定期匯出備份</p>
+          </div>
+        </div>
+        <button class="icon-btn wide" id="btnBackup" type="button" title="資料與備份" aria-label="資料與備份">備份</button>
+      </div>
+      <div class="privacy-strip" id="privacyStrip">
+        名單儲存在本機瀏覽器（localStorage），<strong>不會上傳到伺服器</strong>。換手機、清掉網站資料或換瀏覽器就會消失，請用「備份」匯出 Excel 或 JSON。
+      </div>
+    </header>
+
+    <div id="demoBanner" class="demo-banner" hidden>
+      目前顯示示範資料（均為虛構），可在「資料與備份」一鍵清除。
+    </div>
+
+    <section id="viewList">
+      <div class="toolbar">
+        <label class="search">
+          <span aria-hidden="true">⌕</span>
+          <input id="searchInput" type="search" placeholder="搜尋姓名、公司、電話、介紹人…" autocomplete="off" />
+        </label>
+        <button class="filter-btn" id="btnFilter" type="button">篩選</button>
+      </div>
+      <div class="chip-row" id="sortRow"></div>
+      <div class="count-line" id="countLine"></div>
+      <div class="list" id="list"></div>
+    </section>
+
+    <section id="viewFollow" hidden>
+      <div class="count-line" id="followCount"></div>
+      <div class="list" id="followList"></div>
+    </section>
+
+    <section id="viewStats" class="stats" hidden>
+      <div class="kpis" id="kpis"></div>
+      <div class="charts">
+        <div class="chart-card"><h3>開發狀態</h3><canvas id="chartStatus" height="220"></canvas></div>
+        <div class="chart-card"><h3>名單來源</h3><canvas id="chartSource" height="220"></canvas></div>
+        <div class="chart-card"><h3>開發優先序</h3><canvas id="chartPriority" height="220"></canvas></div>
+        <div class="chart-card"><h3>職業分類</h3><canvas id="chartJob" height="220"></canvas></div>
+      </div>
+      <div class="charts" style="margin-top:12px">
+        <div class="table-card" id="tableLife"></div>
+        <div class="table-card" id="tableCity"></div>
+      </div>
+    </section>
+
+    <section id="viewGuide" class="guide" hidden>
+      <article class="guide-card">
+        <h2>一、如何使用</h2>
+        <ol>
+          <li>在「名單」新增準保戶，填寫來源、五大分類與 CAPMAN。</li>
+          <li>系統會自動計算符合項數與開發優先序（5–6 高優先、3–4 中優先、0–2 待觀察）。</li>
+          <li>設定下次跟進日，「今日待跟進」會列出今天到期與已逾期的人（成交／不需要除外）。</li>
+          <li>「統計」依已填姓名的名單自動彙總，協助決定開發重點。</li>
+          <li>資料只存在這支裝置，請定期到「備份」匯出 Excel 或 JSON。</li>
+        </ol>
+      </article>
+      <article class="guide-card">
+        <h2>二、分類的核心目的</h2>
+        <div class="pills cols-3">
+          <div class="pill job"><h4>01 找出合適的行銷市場</h4><p>鎖定具備需求與契合度的特定客群。</p></div>
+          <div class="pill age"><h4>02 評估市場開發潛力</h4><p>量化客群規模與長期轉化價值。</p></div>
+          <div class="pill rel"><h4>03 決定市場開發重點</h4><p>合理分配時間與資源，優先攻堅高價值目標。</p></div>
+        </div>
+        <p>訓練指出：名單須動態更新，才能提升開發轉換率。</p>
+      </article>
+      <article class="guide-card">
+        <h2>三、五大分類維度</h2>
+        <div class="pills">
+          <div class="pill job"><h4>職業分類</h4><p>按行業風險與職位屬性歸類，精準推薦專業專屬保障方案。</p></div>
+          <div class="pill rel"><h4>關係分類</h4><p>區分親疏熟稔度與信任基礎，制定個性化拜訪與切入節奏。</p></div>
+          <div class="pill age"><h4>年齡／人生階段</h4><p>對應人生不同階段與責任週期，切入對應保障與理財商品。</p></div>
+          <div class="pill comm"><h4>社群分類</h4><p>依據興趣社團與共同圈子經營。「巢」指高度集中、具強烈內部連結的目標客群。</p></div>
+          <div class="pill inc"><h4>收入分類</h4><p>評估可支配所得與保費承受度，規劃最適規模的保單結構。級距為實務工作分類。</p></div>
+        </div>
+      </article>
+      <article class="guide-card">
+        <h2>四、CAPMAN 法則</h2>
+        <p>篩選優質潛在客戶的 6 大核心維度。每一項選「符合／未確認／不符合」；尚未掌握的請先選未確認。</p>
+        <div class="pills cols-2">
+          <div class="pill cap"><h4>C Character　個人特質</h4><p>具備責任感與關愛家人</p></div>
+          <div class="pill cap"><h4>A Approachable　可接近的</h4><p>易於溝通互動，可約見面談</p></div>
+          <div class="pill cap"><h4>P Pass　可通過核保</h4><p>身體健康，符合體況與投保資格</p></div>
+          <div class="pill cap"><h4>M Money　有付費能力</h4><p>經濟穩定，擁有持續繳納保費之預算</p></div>
+          <div class="pill cap"><h4>A Authority　有決定權</h4><p>具備最終要保與財務決策權限</p></div>
+          <div class="pill cap"><h4>N Needs　有需求</h4><p>存在保障缺口或財務規劃需求</p></div>
+        </div>
+        <h3>開發優先序（自動計算）</h3>
+        <p>符合 5–6 項：高優先　／　3–4 項：中優先　／　0–2 項：待觀察。六項皆未填時不評級。</p>
+      </article>
+      <article class="guide-card">
+        <h2>五、準保戶名單來源</h2>
+        <div class="pills cols-3">
+          <div class="pill src"><h4>緣故市場　信任基礎高</h4><p>親朋好友與舊識圈。細項：親朋好友、舊識圈。</p></div>
+          <div class="pill src"><h4>推薦介紹　槓桿影響力</h4><p>1. 影響力中心（COI）　2. 巢（深耕特定社群）。</p></div>
+          <div class="pill src"><h4>陌生開發　持續注入新血</h4><p>問卷展業、活動集客、社群行銷與冷開拓。</p></div>
+        </div>
+        <p>影響力中心三大來源：緣故市場的分析、特定職業的歸類、現有社群的挑選。「巢」的特性：高密度聚集、同質強連結、意見領袖、從眾效應。</p>
+      </article>
+      <article class="guide-card">
+        <h2>六、背景資訊蒐集重點</h2>
+        <p>拿到姓名只是開始。請盡量補足被介紹人的背景、關係與合適聯絡方式。</p>
+        <ul>
+          <li>家庭責任：重要的家庭支柱</li>
+          <li>核心痛點：共同的思維或狀態</li>
+          <li>工作背景：相似的職務風險</li>
+          <li>生活動態：近期發生的變化</li>
+          <li>社群／同窗：找出影響力中心，或年少時的單純友誼</li>
+        </ul>
+        <p>可轉發訊息範例：「這是我配合的壽險顧問，最近在幫我們家做保單檢視，人很專業、不隨便推銷。我有把你推薦給他，有需要可以聽聽看！」</p>
+        <p class="hint">本工具依「顧問式行銷－銷售流程／開拓準保戶」訓練架構製作。職業與收入等選項為實務工作分類，訓練原文未列出固定級距。</p>
+      </article>
+    </section>
+
+    <section id="viewBackup" class="backup" hidden>
+      <div class="warn">
+        <strong>資料只存在這支裝置的瀏覽器，不會上傳到伺服器。</strong>
+        換手機、清除網站資料、使用無痕模式或換瀏覽器，名單就會不見。請定期匯出 Excel 或 JSON 備份，並把檔案存到你自己的雲端或電腦。
+      </div>
+      <article class="guide-card">
+        <h2>匯出與匯入</h2>
+        <p>Excel 欄位與「準保戶市場開發名單」工作簿相同，可來回使用。</p>
+        <div class="btn-row" style="justify-content:flex-start;margin-top:8px">
+          <button class="btn btn-primary" id="btnExportXlsx" type="button">匯出 Excel</button>
+          <button class="btn btn-ghost" id="btnExportJson" type="button">匯出 JSON 備份</button>
+          <button class="btn btn-ghost" id="btnImportFile" type="button">匯入 Excel／CSV／JSON</button>
+          <input id="fileImport" type="file" accept=".xlsx,.xls,.csv,.json,application/json,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,text/csv" hidden />
+        </div>
+        <p class="hint" id="backupMeta"></p>
+      </article>
+      <article class="guide-card">
+        <h2>示範資料（虛構）</h2>
+        <p>可載入 3 筆明顯標示為「示範／虛構」的練習名單，用來熟悉分類與待跟進，不是真實客戶。</p>
+        <div class="btn-row" style="justify-content:flex-start">
+          <button class="btn btn-accent" id="btnDemo" type="button">載入示範資料（虛構，可清除）</button>
+          <button class="btn btn-ghost" id="btnClearDemo" type="button">清除示範資料</button>
+        </div>
+      </article>
+      <article class="guide-card">
+        <h2>清除全部名單</h2>
+        <p>此動作無法復原。若需要，請先匯出備份。</p>
+        <button class="btn btn-danger" id="btnClearAll" type="button">清除全部名單</button>
+      </article>
+    </section>
+
+    <button class="fab" id="fabAdd" type="button" aria-label="新增準保戶">＋</button>
+
+    <nav class="nav" aria-label="主要分頁">
+      <button type="button" data-view="list" class="is-on"><span class="ico">☰</span>名單</button>
+      <button type="button" data-view="follow"><span class="ico">◎</span>今日待跟進<span class="dot" id="followDot" hidden>0</span></button>
+      <button type="button" data-view="stats"><span class="ico">▦</span>統計</button>
+      <button type="button" data-view="guide"><span class="ico">ⓘ</span>分類說明</button>
+      <button type="button" data-view="backup"><span class="ico">⇩</span>備份</button>
+    </nav>
+  </div>
+
+  <div class="overlay" id="formOverlay">
+    <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="formTitle">
+      <div class="sheet-head">
+        <h2 id="formTitle">新增準保戶</h2>
+        <button class="icon-btn" id="btnCloseForm" type="button" style="background:#eef2f6;color:var(--navy)">關閉</button>
+      </div>
+      <form id="prospectForm" class="sheet-body" novalidate></form>
+      <div class="sheet-actions">
+        <button class="btn btn-danger" id="btnDelete" type="button" hidden>刪除</button>
+        <button class="btn btn-ghost" id="btnCancelForm" type="button">取消</button>
+        <button class="btn btn-primary" id="btnSave" type="submit" form="prospectForm">儲存</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="overlay" id="filterOverlay">
+    <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="filterTitle">
+      <div class="sheet-head">
+        <h2 id="filterTitle">篩選名單</h2>
+        <button class="icon-btn" id="btnCloseFilter" type="button" style="background:#eef2f6;color:var(--navy)">關閉</button>
+      </div>
+      <div class="sheet-body filter-grid" id="filterForm"></div>
+      <div class="sheet-actions">
+        <button class="btn btn-ghost" id="btnResetFilter" type="button">清除篩選</button>
+        <button class="btn btn-primary" id="btnApplyFilter" type="button">套用</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="overlay center" id="confirmOverlay">
+    <div class="confirm-box" role="dialog" aria-modal="true">
+      <h3 id="confirmTitle">請確認</h3>
+      <p id="confirmMsg"></p>
+      <div class="btn-row">
+        <button class="btn btn-ghost" id="confirmNo" type="button">取消</button>
+        <button class="btn btn-primary" id="confirmYes" type="button">確定</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status"></div>
+
+  <script src="./vendor/xlsx.full.min.js"></script>
+  <script src="./vendor/chart.umd.min.js"></script>
+  <script src="./js/constants.js"></script>
+  <script src="./js/store.js"></script>
+  <script src="./js/excel.js"></script>
+  <script src="./js/app.js"></script>
+</body>
+</html>

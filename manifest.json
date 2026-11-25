@@ -1,0 +1,17 @@
+{
+  "name": "準保戶開發名單",
+  "short_name": "準保戶開發",
+  "description": "準保戶市場開發名單。資料只存在這支裝置，請定期匯出備份。",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#12243F",
+  "theme_color": "#12243F",
+  "lang": "zh-Hant",
+  "icons": [
+    { "src": "./icons/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "./icons/icon-180.png", "sizes": "180x180", "type": "image/png" },
+    { "src": "./icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "./icons/icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}
